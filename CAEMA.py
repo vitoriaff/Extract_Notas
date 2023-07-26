@@ -2,7 +2,7 @@ import pdfplumber
 import re
 import os
 
-def extrair_informacoes_nota_fiscal(pdf_path):
+def extrair_informacoes_nota_fiscal_caema(pdf_path):
     with pdfplumber.open(pdf_path) as pdf:
         primeira_pagina = pdf.pages[0]
         texto_pagina = primeira_pagina.extract_text()
@@ -31,5 +31,5 @@ informacoes_todos_pdf = []
 for nome_arquivo in os.listdir(pasta_pdf):
     if nome_arquivo.endswith(".pdf"):
         pdf_path = os.path.join(pasta_pdf, nome_arquivo)
-        informacoes = extrair_informacoes_nota_fiscal(pdf_path)
-        informacoes_todos_pdf.append((nome_arquivo, informacoes[0], informacoes[1], informacoes[2]))
+        valor_a_pagar, data_vencimento, num_pages = extrair_informacoes_nota_fiscal_caema(pdf_path)
+        informacoes_todos_pdf.append((nome_arquivo, valor_a_pagar, data_vencimento, num_pages))

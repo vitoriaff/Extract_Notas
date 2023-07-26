@@ -1,6 +1,8 @@
-from edp import extrair_informacoes_nota_fiscal as extrair_edp
-from CAEMA import extrair_informacoes_nota_fiscal as extrair_caema
-from Equatorial import extrair_informacoes_nota_fiscal as extrair_equatorial
+from edp import extrair_informacoes_nota_fiscal_edp as extrair_edp
+from CAEMA import extrair_informacoes_nota_fiscal_caema as extrair_caema
+from Equatorial import extrair_informacoes_nota_fiscal_Equatorial as extrair_equatorial
+from cesan import extrair_informacoes_nota_fiscal_cesan as extrair_cesan
+from SAAE import extrair_informacoes_nota_fiscal_saae as extrair_saae
 import os
 import unicodedata
 
@@ -11,10 +13,13 @@ def normalize_text(text):
 pastas_empresas = [
     (r'C:\Users\Vitoria de Freitas\Desktop\projeto_vitoria\Notas\EDP', 'EDP'),
     (r'C:\Users\Vitoria de Freitas\Desktop\projeto_vitoria\Notas\CAEMA', 'CAEMA'),
-    (r'C:\Users\Vitoria de Freitas\Desktop\projeto_vitoria\Notas\Equatorial', 'Equatorial')
+    (r'C:\Users\Vitoria de Freitas\Desktop\projeto_vitoria\Notas\Equatorial', 'Equatorial'),
+    (r'C:\Users\Vitoria de Freitas\Desktop\projeto_vitoria\Notas\CESAN', 'CESAN'),
+    (r'C:\Users\Vitoria de Freitas\Desktop\projeto_vitoria\Notas\SAAE', 'SAAE')
 ]
 # Lista para armazenar todas as informações de todos os PDFs
 informacoes_todos_pdf = []
+
 # Percorrer todas as pastas e extrair as informações de cada uma
 for pasta_pdf, nome_empresa in pastas_empresas:
     if nome_empresa == 'EDP':
@@ -23,14 +28,27 @@ for pasta_pdf, nome_empresa in pastas_empresas:
         extrair_funcao = extrair_caema
     elif nome_empresa == 'Equatorial':
         extrair_funcao = extrair_equatorial
+    elif nome_empresa == 'CESAN':
+        extrair_funcao = extrair_cesan
+    elif nome_empresa == 'SAAE':
+        extrair_funcao = extrair_saae
     else:
+        print(f"Warning: Unrecognized empresa '{nome_empresa}'. Skipping...")
         continue
     # Percorrer todos os arquivos da pasta
     for nome_arquivo in os.listdir(pasta_pdf):
         if nome_arquivo.endswith(".pdf"):
             pdf_path = os.path.join(pasta_pdf, nome_arquivo)
             informacoes = extrair_funcao(pdf_path)
-            informacoes_todos_pdf.append((nome_arquivo, nome_empresa, informacoes[0], informacoes[1], informacoes[2]))
+            try:
+                # Check if the informacoes tuple has at least 3 elements before appending it
+                if len(informacoes) >= 3:
+                    informacoes_todos_pdf.append((nome_arquivo, nome_empresa, informacoes[0], informacoes[1], informacoes[2]))
+                else:
+                    print(f"Warning: Skipping {pdf_path} due to insufficient information. Contents of 'informacoes': {informacoes}")
+            except IndexError:
+                print(f"Error: Unable to extract information from {pdf_path}.")
+                continue
 
 # Criar e escrever no arquivo de relatório txt
 with open("relatorio.txt", "w", encoding='utf-8') as arquivo_relatorio:

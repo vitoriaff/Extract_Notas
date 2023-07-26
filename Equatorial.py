@@ -2,7 +2,7 @@ import PyPDF2
 import re
 import os
 
-def extrair_informacoes_nota_fiscal(pdf_path):
+def extrair_informacoes_nota_fiscal_Equatorial(pdf_path):
     with open(pdf_path, 'rb') as file:
         pdf_reader = PyPDF2.PdfReader(file)
         num_pages = len(pdf_reader.pages)
@@ -30,6 +30,6 @@ informacoes_todos_pdf = []
 for nome_arquivo in os.listdir(pasta_pdf):
     if nome_arquivo.endswith(".pdf"):
         pdf_path = os.path.join(pasta_pdf, nome_arquivo)
-        vencimento, total_pagar, num_pages = extrair_informacoes_nota_fiscal(pdf_path)
+        vencimento, total_pagar, num_pages = extrair_informacoes_nota_fiscal_Equatorial(pdf_path)
         informacoes_todos_pdf.append((nome_arquivo, vencimento, total_pagar, num_pages))
 
